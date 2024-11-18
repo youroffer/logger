@@ -97,35 +97,37 @@ func SetLevel(level string) {
 	}
 
 }
-func recoverLevel() {
+func recoverLevel(level string, message any, args ...any) {
 	if r := recover(); r != nil {
 		fmt.Println("Logger is not set, using default mode: `INFO`")
 		SetLevel(Level.Info)
+		msg(level, message, args...)
+
 	}
 }
 
-func Trace(message interface{}, args ...interface{}) {
-	defer recoverLevel()
+func Trace(message any, args ...any) {
+	defer recoverLevel(Level.Trace, message, args...)
 	msg(Level.Trace, message, args...)
 }
 
-func Debug(message interface{}, args ...interface{}) {
-	defer recoverLevel()
+func Debug(message any, args ...any) {
+	defer recoverLevel(Level.Debug, message, args...)
 	msg(Level.Debug, message, args...)
 }
 
-func Info(message string, args ...interface{}) {
-	defer recoverLevel()
+func Info(message string, args ...any) {
+	defer recoverLevel(Level.Info, message, args...)
 	msg(Level.Info, message, args...)
 }
 
-func Warn(message string, args ...interface{}) {
-	defer recoverLevel()
+func Warn(message string, args ...any) {
+	defer recoverLevel(Level.Warn, message, args...)
 	msg(Level.Warn, message, args...)
 }
 
-func Error(message interface{}, args ...interface{}) {
-	defer recoverLevel()
+func Error(message any, args ...any) {
+	defer recoverLevel(Level.Error, message, args...)
 	if getLevel() == Level.Debug {
 		msg(Level.Debug, message, args...)
 	}
@@ -133,7 +135,8 @@ func Error(message interface{}, args ...interface{}) {
 	msg(Level.Error, message, args...)
 }
 
-func Fatal(message interface{}, args ...interface{}) {
+func Fatal(message any, args ...any) {
+	defer recoverLevel(Level.Fatal, message, args...)
 	msg(Level.Fatal, message, args...)
 	os.Exit(1)
 }
@@ -143,7 +146,7 @@ func getLevel() string {
 	return l.String()
 }
 
-func msg(level string, message interface{}, args ...interface{}) {
+func msg(level string, message any, args ...any) {
 	var event *zerolog.Event
 
 	switch level {
