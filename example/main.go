@@ -1,8 +1,8 @@
 package main
 
 import (
-	log "github.com/Dev-Cmyser/logger"
-	"github.com/Dev-Cmyser/logger/example/test"
+	log "github.com/youroffer/logger"
+	"github.com/youroffer/logger/example/test"
 )
 
 func main() {

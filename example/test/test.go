@@ -1,6 +1,6 @@
 package test
 
-import log "github.com/Dev-Cmyser/logger"
+import log "github.com/youroffer/logger"
 
 func ShowLogsAgain() {
 	log.Trace("Hello, Trace!")
