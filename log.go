@@ -99,7 +99,8 @@ func SetLevel(level string) {
 }
 func recoverLevel() {
 	if r := recover(); r != nil {
-		fmt.Println("You need to do `log.SetLevel` before Using logger`")
+		fmt.Println("Logger is not set, using default mode: `INFO`")
+		SetLevel(Level.Info)
 	}
 }
 
