@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"runtime"
 	"strings"
@@ -59,13 +60,20 @@ func debugMode(level zerolog.Level) {
 		return fmt.Sprintf("%s ", i)
 	}
 
-	newLogger := zerolog.New(output).With().Timestamp().Logger().Level(level)
-	logger = &newLogger
+	setLogger(output, level)
 
 }
 
 func defaultMode(level zerolog.Level) {
-	newLogger := zerolog.New(os.Stdout).With().Timestamp().Logger().Level(level)
+	setLogger(os.Stdout, level)
+
+}
+
+func setLogger(output io.Writer, level zerolog.Level) {
+	newLogger := zerolog.New(output).With().Fields(map[string]interface{}{
+		"reqID": "example_id",
+		"data":  map[string]any{},
+	}).Timestamp().Logger().Level(level)
 	logger = &newLogger
 
 }
