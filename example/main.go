@@ -7,6 +7,12 @@ import (
 
 func main() {
 
+	log.Warn("Hello, World!")
+	log.Trace("Hello, Trace!")
+	log.Info("Hello, World!")
+	log.Debug("Debugging message")
+	log.Error("Error")
+
 	log.SetLevel(log.Level.Debug)
 	log.Warn("Hello, World!")
 	log.Trace("Hello, Trace!")

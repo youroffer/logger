@@ -97,24 +97,34 @@ func SetLevel(level string) {
 	}
 
 }
+func recoverLevel() {
+	if r := recover(); r != nil {
+		fmt.Println("You need to do `log.SetLevel` before Using logger`")
+	}
+}
 
 func Trace(message interface{}, args ...interface{}) {
+	defer recoverLevel()
 	msg(Level.Trace, message, args...)
 }
 
 func Debug(message interface{}, args ...interface{}) {
+	defer recoverLevel()
 	msg(Level.Debug, message, args...)
 }
 
 func Info(message string, args ...interface{}) {
+	defer recoverLevel()
 	msg(Level.Info, message, args...)
 }
 
 func Warn(message string, args ...interface{}) {
+	defer recoverLevel()
 	msg(Level.Warn, message, args...)
 }
 
 func Error(message interface{}, args ...interface{}) {
+	defer recoverLevel()
 	if getLevel() == Level.Debug {
 		msg(Level.Debug, message, args...)
 	}
@@ -122,14 +132,14 @@ func Error(message interface{}, args ...interface{}) {
 	msg(Level.Error, message, args...)
 }
 
-func getLevel() string {
-	l := logger.GetLevel()
-	return l.String()
-}
-
 func Fatal(message interface{}, args ...interface{}) {
 	msg(Level.Fatal, message, args...)
 	os.Exit(1)
+}
+
+func getLevel() string {
+	l := logger.GetLevel()
+	return l.String()
 }
 
 func msg(level string, message interface{}, args ...interface{}) {
