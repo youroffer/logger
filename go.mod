@@ -1,4 +1,4 @@
-module github.com/Dev-Cmyser/logger
+module github.com/youroffer/logger
 
 go 1.23.2
 
