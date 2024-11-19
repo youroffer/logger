@@ -11,8 +11,7 @@ func main() {
 	log.SetupLogger("info")
 
 	log.Info("This is an info message")
-	log.InfoMsg("Info message with message")
-	log.InfoMsgf("Formatted info message: %s", "golang")
+	log.Infof("Formatted info message: %s", "golang")
 
 	// Логируем с полями
 	fields := map[string]interface{}{

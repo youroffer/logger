@@ -60,28 +60,18 @@ func Info(msg string) {
 	log.Info().Msg(msg)
 }
 
-// InfoFields logs an message with fields
-func InfoFields(fields any) {
-	log.Info().Fields(fields)
-}
-
-// InfoMsg logs an message
-func InfoMsg(msg string) {
-	log.Info().Msg(msg)
-}
-
-// InfoMsgf logs a formatted message
-func InfoMsgf(msg string, args ...any) {
+// Infof logs a formatted message
+func Infof(msg string, args ...any) {
 	log.Info().Msgf(msg, args...)
 }
 
-// InfoFieldsMsg logs an message with fields
-func InfoFieldsMsg(fields any, msg string) {
+// InfoFields logs an message with fields
+func InfoFields(fields any, msg string) {
 	log.Info().Fields(fields).Msg(msg)
 }
 
-// InfoFieldsMsgf logs a formatted message with fields
-func InfoFieldsMsgf(fields any, msg string, args ...any) {
+// InfoFieldsf logs a formatted message with fields
+func InfoFieldsf(fields any, msg string, args ...any) {
 	log.Info().Fields(fields).Msgf(msg, args...)
 }
 
