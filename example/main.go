@@ -1,35 +1,35 @@
 package main
 
 import (
+	"errors"
+
 	log "github.com/youroffer/logger"
-	"github.com/youroffer/logger/example/test"
 )
 
 func main() {
+	// Инициализация логгера с уровнем Info
+	log.SetupLogger("info")
 
-	log.Warn("Hello, World!")
-	log.Trace("Hello, Trace!")
-	log.Info("Hello, World!")
-	log.Debug("Debugging message")
-	log.Error("Error")
+	// log.Info("This is an info message")
+	log.InfoMsg("Info message with message")
+	log.InfoMsgf("Formatted info message: %s", "golang")
 
-	log.SetLevel(log.Level.Debug)
-	log.Warn("Hello, World!")
-	log.Trace("Hello, Trace!")
-	log.Info("Hello, World!")
-	log.Debug("Debugging message")
-	log.Warn("Warn")
-	log.Error("Error")
-	showLogsAgain()
-	test.ShowLogsAgain()
+	// Логируем с полями
+	fields := map[string]interface{}{
+		"module": "main",
+		"status": "initialized",
+	}
+	log.WarnFields(errors.New("warn err"), fields)
+	// log.WarnFieldsMsgf(errors.New("warn err"), fields, "Warn message with fields")
 
-}
-func showLogsAgain() {
-	log.Trace("Hello, Trace!")
-	log.Info("Hello, World!")
-	log.SetLevel(log.Level.Error)
-	log.Debug("Debugging message")
-	log.Warn("Warn")
-	log.Error("Error")
+	// Инициализация логгера с уровнем Debug
+	log.SetupLogger("debug")
 
+	// Логируем с уровнем Debug
+	log.Err(errors.New("err error"))
+	log.ErrMsgf(errors.New("err error"), "Formatted err message: %s", "msg")
+
+	// Логируем с полями 
+	// log.DebugFields(fields, "Debug message with fields")
+	log.DebugFieldsf(fields, "Formatted debug message with fields: %s", "debugging")
 }

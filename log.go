@@ -1,203 +1,176 @@
 package log
 
 import (
-	"fmt"
-	"io"
 	"os"
-	"runtime"
-	"strings"
-	"time"
 
-	"github.com/fatih/color"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
-var Level = struct {
-	Trace string
-	Debug string
-	Info  string
-	Warn  string
-	Error string
-	Fatal string
-}{
-	Trace: "trace",
-	Debug: "debug",
-	Info:  "info",
-	Warn:  "warn",
-	Error: "error",
-	Fatal: "fatal",
-}
-
-var logger *zerolog.Logger
-
-func debugMode(level zerolog.Level) {
-	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
-	output.FormatLevel = func(i interface{}) string {
-		col := color.New(color.FgWhite, color.Bold)
-		switch i {
-		case Level.Trace:
-			col = color.New(color.FgCyan)
-		case Level.Debug:
-			col = color.New(color.FgBlue)
-		case Level.Info:
-			col = color.New(color.FgGreen)
-		case Level.Warn:
-			col = color.New(color.FgYellow)
-		case Level.Error:
-			col = color.New(color.FgRed)
-		case Level.Fatal:
-			col = color.New(color.FgMagenta)
-		}
-		return col.Sprintf(" %-6s", i)
-	}
-	output.FormatMessage = func(i interface{}) string {
-		return fmt.Sprintf(" %s ", i)
-	}
-	output.FormatFieldName = func(i interface{}) string {
-		return fmt.Sprintf("%s:", i)
-	}
-	output.FormatFieldValue = func(i interface{}) string {
-		return fmt.Sprintf("%s ", i)
+// SetupLogger initializes the global logger with the specified log level
+func SetupLogger(level string) {
+	zlevel, err := zerolog.ParseLevel(level)
+	if err != nil {
+		zlevel = zerolog.InfoLevel
 	}
 
-	setLogger(output, level)
+	zerolog.SetGlobalLevel(zlevel)
+	zerolog.TimeFieldFormat = "02.01.2006 15:04:05"
 
-}
-
-func defaultMode(level zerolog.Level) {
-	setLogger(os.Stdout, level)
-
-}
-
-func setLogger(output io.Writer, level zerolog.Level) {
-	newLogger := zerolog.New(output).With().Fields(map[string]interface{}{
-		"reqID": "example_id",
-		"data":  map[string]any{},
-	}).Timestamp().Logger().Level(level)
-	logger = &newLogger
-
-}
-
-func SetLevel(level string) {
-	switch strings.ToLower(level) {
-	case Level.Trace:
-		defaultMode(zerolog.InfoLevel)
-	case Level.Debug:
-		debugMode(zerolog.DebugLevel)
-	case Level.Info:
-		defaultMode(zerolog.InfoLevel)
-	case Level.Warn:
-		defaultMode(zerolog.InfoLevel)
-	case Level.Error:
-		defaultMode(zerolog.InfoLevel)
-	case Level.Fatal:
-		defaultMode(zerolog.InfoLevel)
+	switch zlevel {
+	case zerolog.DebugLevel:
+		log.Logger = zerolog.New(zerolog.ConsoleWriter{
+			Out:        os.Stderr,
+			TimeFormat: "15:04:05"}).
+			With().
+			Timestamp().
+			CallerWithSkipFrameCount(3).
+			Logger()
 	default:
-		defaultMode(zerolog.InfoLevel)
-	}
-
-}
-func recoverLevel(level string, message any, args ...any) {
-	if r := recover(); r != nil {
-		fmt.Println("Logger is not set, using default mode: `INFO`")
-		SetLevel(Level.Info)
-		msg(level, message, args...)
-
+		log.Logger = zerolog.New(os.Stdout).
+			With().
+			Timestamp().
+			CallerWithSkipFrameCount(3).
+			Logger()
 	}
 }
 
-func Trace(message any, args ...any) {
-	defer recoverLevel(Level.Trace, message, args...)
-	msg(Level.Trace, message, args...)
+// Debug logs a debug message
+func Debug(msg string) {
+	log.Debug().Msg(msg)
 }
 
-func Debug(message any, args ...any) {
-	defer recoverLevel(Level.Debug, message, args...)
-	msg(Level.Debug, message, args...)
+// DebugMsgf logs a formatted debug message
+func Debugf(msg string, args ...any) {
+	log.Debug().Msgf(msg, args...)
 }
 
-func Info(message string, args ...any) {
-	defer recoverLevel(Level.Info, message, args...)
-	msg(Level.Info, message, args...)
+// DebugFields logs a debug message with fields
+func DebugFields(fields any, msg string) {
+	log.Debug().Fields(fields).Msg(msg)
 }
 
-func Warn(message string, args ...any) {
-	defer recoverLevel(Level.Warn, message, args...)
-	msg(Level.Warn, message, args...)
+// DebugFieldsMsgf logs a debug formatted message with fields
+func DebugFieldsf(fields any, msg string, args ...any) {
+	log.Debug().Fields(fields).Msgf(msg, args...)
 }
 
-func Error(message any, args ...any) {
-	defer recoverLevel(Level.Error, message, args...)
-	if getLevel() == Level.Debug {
-		msg(Level.Debug, message, args...)
-	}
-
-	msg(Level.Error, message, args...)
+// Info logs an message
+func Info(msg string) {
+	log.Info().Msg(msg)
 }
 
-func Fatal(message any, args ...any) {
-	defer recoverLevel(Level.Fatal, message, args...)
-	msg(Level.Fatal, message, args...)
-	os.Exit(1)
+// InfoFields logs an message with fields
+func InfoFields(fields any) {
+	log.Info().Fields(fields)
 }
 
-func getLevel() string {
-	l := logger.GetLevel()
-	return l.String()
+// InfoMsg logs an message
+func InfoMsg(msg string) {
+	log.Info().Msg(msg)
 }
 
-func msg(level string, message any, args ...any) {
-	var event *zerolog.Event
-
-	switch level {
-	case Level.Trace:
-		event = logger.Trace()
-	case Level.Debug:
-		event = logger.Debug()
-	case Level.Info:
-		event = logger.Info()
-	case Level.Warn:
-		event = logger.Warn()
-	case Level.Error:
-		event = logger.Error()
-	case Level.Fatal:
-		event = logger.Fatal()
-	default:
-		event = logger.Info()
-	}
-
-	callerInfo := getCallerInfo(3)
-
-	switch msg := message.(type) {
-	case error:
-		event.Msgf("%s %s", append([]interface{}{callerInfo, msg.Error()}, args...)...)
-	case string:
-		event.Msgf("%s %s", append([]interface{}{callerInfo, msg}, args...)...)
-	default:
-		event.Msgf("%s %s message %v has unknown type %v", append([]interface{}{callerInfo, level, message, msg}, args...)...)
-	}
+// InfoMsgf logs a formatted message
+func InfoMsgf(msg string, args ...any) {
+	log.Info().Msgf(msg, args...)
 }
 
-func getCallerInfo(skip int) string {
-	pc, file, line, ok := runtime.Caller(skip)
+// InfoFieldsMsg logs an message with fields
+func InfoFieldsMsg(fields any, msg string) {
+	log.Info().Fields(fields).Msg(msg)
+}
 
-	if !ok {
-		return "unknown"
-	}
+// InfoFieldsMsgf logs a formatted message with fields
+func InfoFieldsMsgf(fields any, msg string, args ...any) {
+	log.Info().Fields(fields).Msgf(msg, args...)
+}
 
-	funcPath := runtime.FuncForPC(pc).Name()
-	funcSlice := strings.Split(funcPath, "/")
-	funcName := funcSlice[len(funcSlice)-1]
+// Warn logs a warning error
+func Warn(err error) {
+	log.Warn().Err(err)
+}
 
-	var info string
-	level := getLevel()
+// WarnFields logs a warning error with fields
+func WarnFields(err error, fields any) {
+	log.Warn().Err(err).Fields(fields)
+}
 
-	switch level {
-	case Level.Debug:
-		info = fmt.Sprintf("%s:%d  |  %s  |", file, line, funcName)
-	default:
-		info = ""
-	}
-	return info
+// WarnMsg logs a warning error with a message
+func WarnMsg(err error, msg string) {
+	log.Warn().Err(err).Msg(msg)
+}
 
+// WarnMsgf logs a warning error with a formatted message
+func WarnMsgf(err error, msg string, args ...any) {
+	log.Warn().Err(err).Msgf(msg, args...)
+}
+
+// WarnFieldsMsg logs a warning error with fields and a message
+func WarnFieldsMsg(err error, fields any, msg string) {
+	log.Warn().Err(err).Fields(fields).Msg(msg)
+}
+
+// WarnFieldsMsgf logs a warning error with fields and a formatted message
+func WarnFieldsMsgf(err error, fields any, msg string, args ...any) {
+	log.Warn().Err(err).Fields(fields).Msgf(msg, args...)
+}
+
+// Err logs an error
+func Err(err error) {
+	log.Error().Err(err)
+}
+
+// ErrMsg logs an error with a message
+func ErrMsg(err error, msg string) {
+	log.Error().Err(err).Msg(msg)
+}
+
+// ErrMsgf logs an error with a formatted message
+func ErrMsgf(err error, msg string, args ...any) {
+	log.Error().Err(err).Msgf(msg, args...)
+}
+
+// ErrFields logs an error with fields
+func ErrFields(err error, fields any) {
+	log.Error().Err(err).Fields(fields)
+}
+
+// ErrFieldsMsg logs an error with fields and a message
+func ErrFieldsMsg(err error, fields any, msg string) {
+	log.Error().Err(err).Fields(fields).Msg(msg)
+}
+
+// ErrFieldsMsgf logs an error with fields and a formatted message
+func ErrFieldsMsgf(err error, fields any, msg string, args ...any) {
+	log.Error().Err(err).Fields(fields).Msgf(msg, args...)
+}
+
+// Fatal logs a fatal error 
+func Fatal(err error) {
+	log.Fatal().Err(err)
+}
+
+// FatalMsg logs a fatal error  with a message
+func FatalMsg(err error, msg string) {
+	log.Fatal().Err(err).Msg(msg)
+}
+
+// FatalMsgf logs a fatal error with a formatted message
+func FatalMsgf(err error, msg string, args ...any) {
+	log.Fatal().Err(err).Msgf(msg, args...)
+}
+
+// FatalFields logs a fatal error with fields
+func FatalFields(err error, fields any) {
+	log.Fatal().Err(err).Fields(fields)
+}
+
+// FatalFieldsMsg logs a fatal error with fields and a message
+func FatalFieldsMsg(err error, fields any, msg string) {
+	log.Fatal().Err(err).Fields(fields).Msg(msg)
+}
+
+// FatalFieldsMsgf logs a fatal error with fields and a formatted message
+func FatalFieldsMsgf(err error, fields any, msg string, args ...any) {
+	log.Fatal().Err(err).Fields(fields).Msgf(msg, args...)
 }
