@@ -10,7 +10,7 @@ func main() {
 	// Инициализация логгера с уровнем Info
 	log.SetupLogger("info")
 
-	// log.Info("This is an info message")
+	log.Info("This is an info message")
 	log.InfoMsg("Info message with message")
 	log.InfoMsgf("Formatted info message: %s", "golang")
 
@@ -20,7 +20,7 @@ func main() {
 		"status": "initialized",
 	}
 	log.WarnFields(errors.New("warn err"), fields)
-	// log.WarnFieldsMsgf(errors.New("warn err"), fields, "Warn message with fields")
+	log.WarnFieldsMsgf(errors.New("warn err"), fields, "Warn message with fields")
 
 	// Инициализация логгера с уровнем Debug
 	log.SetupLogger("debug")
@@ -30,6 +30,6 @@ func main() {
 	log.ErrMsgf(errors.New("err error"), "Formatted err message: %s", "msg")
 
 	// Логируем с полями 
-	// log.DebugFields(fields, "Debug message with fields")
+	log.DebugFields(fields, "Debug message with fields")
 	log.DebugFieldsf(fields, "Formatted debug message with fields: %s", "debugging")
 }
