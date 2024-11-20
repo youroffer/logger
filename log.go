@@ -77,12 +77,12 @@ func InfoFieldsf(fields any, msg string, args ...any) {
 
 // Warn logs a warning error
 func Warn(err error) {
-	log.Warn().Err(err)
+	log.Warn().Err(err).Send()
 }
 
 // WarnFields logs a warning error with fields
 func WarnFields(err error, fields any) {
-	log.Warn().Err(err).Fields(fields)
+	log.Warn().Err(err).Fields(fields).Send()
 }
 
 // WarnMsg logs a warning error with a message
@@ -107,7 +107,7 @@ func WarnFieldsMsgf(err error, fields any, msg string, args ...any) {
 
 // Err logs an error
 func Err(err error) {
-	log.Error().Err(err)
+	log.Error().Err(err).Send()
 }
 
 // ErrMsg logs an error with a message
@@ -122,7 +122,7 @@ func ErrMsgf(err error, msg string, args ...any) {
 
 // ErrFields logs an error with fields
 func ErrFields(err error, fields any) {
-	log.Error().Err(err).Fields(fields)
+	log.Error().Err(err).Fields(fields).Send()
 }
 
 // ErrFieldsMsg logs an error with fields and a message
@@ -137,7 +137,7 @@ func ErrFieldsMsgf(err error, fields any, msg string, args ...any) {
 
 // Fatal logs a fatal error 
 func Fatal(err error) {
-	log.Fatal().Err(err)
+	log.Fatal().Err(err).Send()
 }
 
 // FatalMsg logs a fatal error  with a message
@@ -152,7 +152,7 @@ func FatalMsgf(err error, msg string, args ...any) {
 
 // FatalFields logs a fatal error with fields
 func FatalFields(err error, fields any) {
-	log.Fatal().Err(err).Fields(fields)
+	log.Fatal().Err(err).Fields(fields).Send()
 }
 
 // FatalFieldsMsg logs a fatal error with fields and a message
