@@ -14,10 +14,12 @@ func main() {
 	log.Infof("Formatted info message: %s", "golang")
 
 	// Логируем с полями
-	fields := map[string]interface{}{
-		"module": "main",
-		"status": "initialized",
+	fields := log.Fields{
+		"module":     "main",
+		"status":     "initialized",
+		"request_id": 1,
 	}
+
 	log.WarnFields(errors.New("warn err"), fields)
 	log.WarnFieldsMsgf(errors.New("warn err"), fields, "Warn message with fields")
 
@@ -25,10 +27,10 @@ func main() {
 	log.SetupLogger("debug")
 
 	// Логируем с уровнем Debug
-	log.Err(errors.New("err error"))
+	log.ErrFields(errors.New("err error"), fields)
 	log.ErrMsgf(errors.New("err error"), "Formatted err message: %s", "msg")
 
-	// Логируем с полями 
-	log.DebugFields(fields, "Debug message with fields")
+	// Логируем с полями
+	log.DebugFields("Debug message with fields", fields)
 	log.DebugFieldsf(fields, "Formatted debug message with fields: %s", "debugging")
 }

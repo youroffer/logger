@@ -7,6 +7,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+type Fields map[string]interface{}
+
 // SetupLogger initializes the global logger with the specified log level
 func SetupLogger(level string) {
 	zlevel, err := zerolog.ParseLevel(level)
@@ -20,8 +22,9 @@ func SetupLogger(level string) {
 	switch zlevel {
 	case zerolog.DebugLevel:
 		log.Logger = zerolog.New(zerolog.ConsoleWriter{
-			Out:        os.Stderr,
-			TimeFormat: "15:04:05"}).
+			Out:         os.Stderr,
+			TimeFormat:  "15:04:05",
+			FieldsOrder: []string{"request_id"}}).
 			With().
 			Timestamp().
 			CallerWithSkipFrameCount(3).
@@ -46,12 +49,12 @@ func Debugf(msg string, args ...any) {
 }
 
 // DebugFields logs a debug message with fields
-func DebugFields(fields any, msg string) {
+func DebugFields(msg string, fields map[string]interface{}) {
 	log.Debug().Fields(fields).Msg(msg)
 }
 
 // DebugFieldsMsgf logs a debug formatted message with fields
-func DebugFieldsf(fields any, msg string, args ...any) {
+func DebugFieldsf(fields map[string]interface{}, msg string, args ...any) {
 	log.Debug().Fields(fields).Msgf(msg, args...)
 }
 
@@ -66,12 +69,12 @@ func Infof(msg string, args ...any) {
 }
 
 // InfoFields logs an message with fields
-func InfoFields(fields any, msg string) {
+func InfoFields(msg string, fields map[string]interface{}) {
 	log.Info().Fields(fields).Msg(msg)
 }
 
 // InfoFieldsf logs a formatted message with fields
-func InfoFieldsf(fields any, msg string, args ...any) {
+func InfoFieldsf(fields map[string]interface{}, msg string, args ...any) {
 	log.Info().Fields(fields).Msgf(msg, args...)
 }
 
@@ -81,7 +84,7 @@ func Warn(err error) {
 }
 
 // WarnFields logs a warning error with fields
-func WarnFields(err error, fields any) {
+func WarnFields(err error, fields map[string]interface{}) {
 	log.Warn().Err(err).Fields(fields).Send()
 }
 
@@ -96,12 +99,12 @@ func WarnMsgf(err error, msg string, args ...any) {
 }
 
 // WarnFieldsMsg logs a warning error with fields and a message
-func WarnFieldsMsg(err error, fields any, msg string) {
+func WarnFieldsMsg(err error, msg string, fields map[string]interface{}) {
 	log.Warn().Err(err).Fields(fields).Msg(msg)
 }
 
 // WarnFieldsMsgf logs a warning error with fields and a formatted message
-func WarnFieldsMsgf(err error, fields any, msg string, args ...any) {
+func WarnFieldsMsgf(err error, fields map[string]interface{}, msg string, args ...any) {
 	log.Warn().Err(err).Fields(fields).Msgf(msg, args...)
 }
 
@@ -121,21 +124,21 @@ func ErrMsgf(err error, msg string, args ...any) {
 }
 
 // ErrFields logs an error with fields
-func ErrFields(err error, fields any) {
+func ErrFields(err error, fields map[string]interface{}) {
 	log.Error().Err(err).Fields(fields).Send()
 }
 
 // ErrFieldsMsg logs an error with fields and a message
-func ErrFieldsMsg(err error, fields any, msg string) {
+func ErrFieldsMsg(err error, msg string, fields map[string]interface{}) {
 	log.Error().Err(err).Fields(fields).Msg(msg)
 }
 
 // ErrFieldsMsgf logs an error with fields and a formatted message
-func ErrFieldsMsgf(err error, fields any, msg string, args ...any) {
+func ErrFieldsMsgf(err error, fields map[string]interface{}, msg string, args ...any) {
 	log.Error().Err(err).Fields(fields).Msgf(msg, args...)
 }
 
-// Fatal logs a fatal error 
+// Fatal logs a fatal error
 func Fatal(err error) {
 	log.Fatal().Err(err).Send()
 }
@@ -151,16 +154,16 @@ func FatalMsgf(err error, msg string, args ...any) {
 }
 
 // FatalFields logs a fatal error with fields
-func FatalFields(err error, fields any) {
+func FatalFields(err error, fields map[string]interface{}) {
 	log.Fatal().Err(err).Fields(fields).Send()
 }
 
 // FatalFieldsMsg logs a fatal error with fields and a message
-func FatalFieldsMsg(err error, fields any, msg string) {
+func FatalFieldsMsg(err error, msg string, fields map[string]interface{}) {
 	log.Fatal().Err(err).Fields(fields).Msg(msg)
 }
 
 // FatalFieldsMsgf logs a fatal error with fields and a formatted message
-func FatalFieldsMsgf(err error, fields any, msg string, args ...any) {
+func FatalFieldsMsgf(err error, fields map[string]interface{}, msg string, args ...any) {
 	log.Fatal().Err(err).Fields(fields).Msgf(msg, args...)
 }

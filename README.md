@@ -15,32 +15,36 @@ func main() {
 	// Инициализация логгера с уровнем Info
 	log.SetupLogger("info")
 
-	log.Info("Info message with message")
 	log.Infof("Formatted info message: %s", "golang")
 
 	// Логируем с полями
-	fields := map[string]interface{}{
+	fields := log.Fields{
 		"module": "main",
 		"status": "initialized",
+		"request_id": 1,
 	}
-	log.WarnFields(errors.New("warn err"), fields)
+
+	log.WarnFieldsMsgf(errors.New("warn err"), fields, "Warn message with fields")
 
 	// Инициализация логгера с уровнем Debug
 	log.SetupLogger("debug")
 
 	// Логируем с уровнем Debug
-	log.Err(errors.New("err error"))
+	log.ErrFields(errors.New("err error"), fields)
 	log.ErrMsgf(errors.New("err error"), "Formatted err message: %s", "msg")
 
-	// Логируем с полями 
+	// Логируем с полями
+	log.DebugFields("Debug message with fields", fields)
 	log.DebugFieldsf(fields, "Formatted debug message with fields: %s", "debugging")
 }
 ```
 
 ```bash
-{"level":"info","time":"19.11.2024 02:24:20","caller":"/logger/example/main.go:14","message":"Info message with message"}
-{"level":"info","time":"19.11.2024 02:24:20","caller":"/logger/example/main.go:15","message":"Formatted info message: golang"}
+{"level":"info","time":"07.12.2024 18:50:00","caller":"/logger/example/main.go:14","message":"Formatted info message: golang"}
+{"level":"warn","error":"warn err","module":"main","request_id":1,"status":"initialized","time":"07.12.2024 18:50:00","caller":"/logger/example/main.go:24","message":"Warn message with fields"}
 
-02:24:20 ERR example/main.go:30 > Formatted err message: msg error="err error"
-02:24:20 DBG example/main.go:34 > Formatted debug message with fields: debugging module=main status=initialized
+18:50:00 ERR example/main.go:30 > request_id=1 error="err error" module=main status=initialized
+18:50:00 ERR example/main.go:31 > Formatted err message: msg error="err error"
+18:50:00 DBG example/main.go:34 > Debug message with fields request_id=1 module=main status=initialized
+18:50:00 DBG example/main.go:35 > Formatted debug message with fields: debugging request_id=1 module=main status=initialized
 ```
