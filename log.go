@@ -9,6 +9,10 @@ import (
 
 type Fields map[string]interface{}
 
+const (
+	RequestID = "request_id"
+)
+
 // SetupLogger initializes the global logger with the specified log level
 func SetupLogger(level string) {
 	zlevel, err := zerolog.ParseLevel(level)
@@ -24,7 +28,7 @@ func SetupLogger(level string) {
 		log.Logger = zerolog.New(zerolog.ConsoleWriter{
 			Out:         os.Stderr,
 			TimeFormat:  "15:04:05",
-			FieldsOrder: []string{"request_id"}}).
+			FieldsOrder: []string{RequestID}}).
 			With().
 			Timestamp().
 			CallerWithSkipFrameCount(3).

@@ -21,7 +21,7 @@ func main() {
 	fields := log.Fields{
 		"module": "main",
 		"status": "initialized",
-		"request_id": 1,
+		log.RequestID: 1,
 	}
 
 	log.WarnFieldsMsgf(errors.New("warn err"), fields, "Warn message with fields")
