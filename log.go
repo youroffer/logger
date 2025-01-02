@@ -31,13 +31,13 @@ func SetupLogger(level string) {
 			FieldsOrder: []string{RequestID}}).
 			With().
 			Timestamp().
-			CallerWithSkipFrameCount(3).
+			Caller().
 			Logger()
 	default:
 		log.Logger = zerolog.New(os.Stdout).
 			With().
 			Timestamp().
-			CallerWithSkipFrameCount(3).
+			Caller().
 			Logger()
 	}
 }
